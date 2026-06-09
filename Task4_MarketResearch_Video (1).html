@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Task 4 – Market Research & Investment Strategy</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060E1C; --surface:rgba(255,255,255,.045); --border:rgba(255,255,255,.08);
+  --blue:#3B82F6; --amber:#F59E0B; --green:#10B981; --red:#EF4444;
+  --teal:#14B8A6; --purp:#8B5CF6; --gray:#94A3B8; --sky:#BAE6FD;
+  --white:#F1F5F9; --coral:#F97316;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg); color:var(--white);
+  font-family:'DM Sans',sans-serif;
+  width:1280px; height:720px; overflow:hidden; position:relative;
+}
+body::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 700px 400px at 90% 10%,rgba(245,158,11,.06) 0%,transparent 70%),
+    radial-gradient(ellipse 500px 500px at 5% 90%,rgba(59,130,246,.06) 0%,transparent 70%);
+}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 60px;opacity:0;pointer-events:none;transition:opacity .5s ease;}
+.slide.active{opacity:1;pointer-events:all;}
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--coral));transition:width .5s ease;z-index:99;}
+#ctr{position:fixed;bottom:18px;right:24px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gray);z-index:99;}
+#dots{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:99;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:background .3s,transform .3s;}
+.dot.on{background:var(--amber);transform:scale(1.4);}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:82px;line-height:.92;letter-spacing:2px;}
+h2{font-family:'Bebas Neue',sans-serif;font-size:50px;line-height:1;letter-spacing:1px;margin-bottom:8px;}
+.sub{font-size:15px;color:var(--gray);line-height:1.6;text-align:center;max-width:680px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;backdrop-filter:blur(6px);}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;width:100%;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl th{background:rgba(245,158,11,.15);padding:9px 13px;text-align:left;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);border-bottom:1px solid rgba(255,255,255,.08);}
+.tbl td{padding:8px 13px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--white);}
+.tbl tr:last-child td{border-bottom:none;}
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;}
+.bg{background:rgba(16,185,129,.15);color:var(--green);}
+.bb{background:rgba(59,130,246,.15);color:var(--blue);}
+.ba{background:rgba(245,158,11,.15);color:var(--amber);}
+.br{background:rgba(239,68,68,.15);color:var(--red);}
+.bp{background:rgba(139,92,246,.15);color:var(--purp);}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+.bar-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;width:52px;text-align:right;flex-shrink:0;}
+.bar-track{flex:1;height:28px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;font-size:12px;font-weight:700;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0;}
+.bf-a{background:linear-gradient(90deg,#B45309,#F59E0B);}
+.bf-b{background:linear-gradient(90deg,#1D4ED8,#3B82F6);}
+.bf-g{background:linear-gradient(90deg,#059669,#10B981);}
+.bf-p{background:linear-gradient(90deg,#6D28D9,#8B5CF6);}
+.bf-r{background:linear-gradient(90deg,#B91C1C,#EF4444);}
+@keyframes fup{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fin{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.a1{animation:fup .7s .1s both;}.a2{animation:fup .7s .25s both;}.a3{animation:fup .7s .4s both;}
+.a4{animation:fup .7s .55s both;}.a5{animation:fup .7s .7s both;}.a6{animation:fup .7s .85s both;}
+.asc{animation:fin .8s .2s both;}
+#ticker{position:fixed;bottom:0;left:0;right:0;background:rgba(245,158,11,.08);border-top:1px solid rgba(245,158,11,.18);height:30px;overflow:hidden;display:flex;align-items:center;z-index:50;}
+.tick-in{display:flex;gap:44px;white-space:nowrap;animation:ts 24s linear infinite;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gray);}
+.tg{color:var(--green);margin-left:5px;}.tr{color:var(--red);margin-left:5px;}.ta{color:var(--amber);margin-left:5px;}
+@keyframes ts{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.star{color:var(--amber);font-size:16px;}
+.vs-row{display:flex;align-items:stretch;gap:14px;width:100%;max-width:1000px;}
+.vs-cell{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;}
+.vs-head{font-family:'Bebas Neue',sans-serif;font-size:24px;margin-bottom:10px;}
+.vs-item{font-size:13px;color:var(--gray);line-height:1.7;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.vs-item:last-child{border-bottom:none;}
+.vs-item strong{color:var(--white);}
+</style>
+</head>
+<body>
+<div id="prog" style="width:0%"></div>
+<div id="ctr">1 / 10</div>
+<div id="dots"></div>
+<div id="ticker"><div class="tick-in">
+  <span>S&amp;P 500 avg return<span class="tg">+11–13% / yr</span></span>
+  <span>NASDAQ avg return<span class="tg">+15–18% / yr</span></span>
+  <span>Bitcoin 10-yr annualized<span class="tg">+40–60%</span></span>
+  <span>Bitcoin Max Drawdown<span class="tr">-75% (2018)</span></span>
+  <span>US Stock Market Cap<span class="ta">$50T+</span></span>
+  <span>Crypto Market Cap<span class="ta">~$3–4T</span></span>
+  <span>Sharpe Ratio S&amp;P 500<span class="tg">1.0–1.5</span></span>
+  <span>BTC Halving<span class="ta">Apr 2024</span></span>
+  <span>AI Market CAGR<span class="tg">30–35%</span></span>
+  <span>S&amp;P 500 avg return<span class="tg">+11–13% / yr</span></span>
+  <span>NASDAQ avg return<span class="tg">+15–18% / yr</span></span>
+  <span>Bitcoin 10-yr annualized<span class="tg">+40–60%</span></span>
+  <span>US Stock Market Cap<span class="ta">$50T+</span></span>
+  <span>Crypto Market Cap<span class="ta">~$3–4T</span></span>
+</div></div>
+
+<!-- S1 COVER -->
+<div class="slide active" id="s1">
+  <div class="tag a1">CodeAlpha · Finance & Investment Analysis · Task 04</div>
+  <h1 class="a2" style="text-align:center;color:var(--amber);">MARKET RESEARCH</h1>
+  <h1 class="a2" style="text-align:center;color:var(--white);margin-bottom:16px;">&amp; INVESTMENT STRATEGY</h1>
+  <p class="sub a3" style="margin-bottom:28px;">
+    Stock Market vs Cryptocurrency · Risk Management Frameworks · Future Sector Outlook 2026–2028
+  </p>
+  <div class="a4" style="display:flex;gap:20px;">
+    <div class="card" style="border-color:rgba(59,130,246,.3);text-align:center;min-width:160px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--blue);">STOCKS</div>
+      <div style="font-size:11px;color:var(--gray);">Traditional Markets</div>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gray);line-height:2.2;">VS</div>
+    <div class="card" style="border-color:rgba(245,158,11,.3);text-align:center;min-width:160px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--amber);">CRYPTO</div>
+      <div style="font-size:11px;color:var(--gray);">Digital Assets</div>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gray);line-height:2.2;">+</div>
+    <div class="card" style="border-color:rgba(16,185,129,.3);text-align:center;min-width:160px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--green);">RISK MGT</div>
+      <div style="font-size:11px;color:var(--gray);">Strategies</div>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gray);line-height:2.2;">+</div>
+    <div class="card" style="border-color:rgba(139,92,246,.3);text-align:center;min-width:160px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--purp);">OUTLOOK</div>
+      <div style="font-size:11px;color:var(--gray);">2026–2028</div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 MARKET SIZE -->
+<div class="slide" id="s2">
+  <div class="tag a1">Market Overview</div>
+  <h2 class="a2">STOCK MARKET vs CRYPTOCURRENCY</h2>
+  <p class="sub a3" style="margin-bottom:20px;">Two very different markets — one 100 years old, one 15 years old</p>
+  <div class="vs-row a4">
+    <div class="vs-cell" style="border-color:rgba(59,130,246,.3);">
+      <div class="vs-head" style="color:var(--blue);">STOCK MARKET</div>
+      <div class="vs-item"><strong>Market Cap:</strong> $50+ Trillion (US)</div>
+      <div class="vs-item"><strong>Hours:</strong> Mon–Fri, 9:30am–4pm ET</div>
+      <div class="vs-item"><strong>Age:</strong> 100+ years of history</div>
+      <div class="vs-item"><strong>Regulation:</strong> Strong (SEC, FINRA)</div>
+      <div class="vs-item"><strong>Volatility:</strong> Low–Medium (~15–18% ann.)</div>
+      <div class="vs-item"><strong>Dividends:</strong> Yes — regular income</div>
+      <div class="vs-item"><strong>Protection:</strong> Strong (SIPC insured)</div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 10px;gap:10px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gray);">VS</div>
+      <div style="width:1px;flex:1;background:var(--border);"></div>
+    </div>
+    <div class="vs-cell" style="border-color:rgba(245,158,11,.3);">
+      <div class="vs-head" style="color:var(--amber);">CRYPTOCURRENCY</div>
+      <div class="vs-item"><strong>Market Cap:</strong> ~$3–4 Trillion</div>
+      <div class="vs-item"><strong>Hours:</strong> 24/7/365 — never closes</div>
+      <div class="vs-item"><strong>Age:</strong> ~15 years (Bitcoin: 2009)</div>
+      <div class="vs-item"><strong>Regulation:</strong> Evolving, inconsistent globally</div>
+      <div class="vs-item"><strong>Volatility:</strong> Very High (~50–100%+ ann.)</div>
+      <div class="vs-item"><strong>Yield:</strong> Staking yields (ETH ~3–5%)</div>
+      <div class="vs-item"><strong>Protection:</strong> Limited — self-custody risk</div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 RETURNS COMPARISON -->
+<div class="slide" id="s3">
+  <div class="tag a1">Return Analysis</div>
+  <h2 class="a2">10-YEAR RETURN PROFILES</h2>
+  <p class="sub a3" style="margin-bottom:20px;">Higher returns in crypto come with <span style="color:var(--red);">much higher drawdowns</span></p>
+  <div style="width:100%;max-width:960px;" class="a4">
+    <div style="font-size:11px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Average Annual Return (%)</div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--blue);">S&P 500</span><div class="bar-track"><div class="bar-fill bf-b" data-w="19%">~11–13%</div></div></div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--teal);">NASDAQ</span><div class="bar-track"><div class="bar-fill bf-g" data-w="28%">~15–18%</div></div></div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--amber);">Bitcoin</span><div class="bar-track"><div class="bar-fill bf-a" data-w="80%">~40–60% 🔥</div></div></div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--purp);">Ethereum</span><div class="bar-track"><div class="bar-fill bf-p" data-w="65%">~30–50%</div></div></div>
+  </div>
+  <div style="width:100%;max-width:960px;margin-top:6px;" class="a5">
+    <div style="font-size:11px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Maximum Drawdown (%) — Lower is safer</div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--blue);">S&P 500</span><div class="bar-track"><div class="bar-fill bf-b" data-w="23%">-34% (2020)</div></div></div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--amber);">Bitcoin</span><div class="bar-track"><div class="bar-fill bf-r" data-w="75%">-75% (2018) / -65% (2022)</div></div></div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--purp);">Ethereum</span><div class="bar-track"><div class="bar-fill bf-r" data-w="88%">-82% (2018) — highest risk</div></div></div>
+  </div>
+  <div class="a6 card" style="margin-top:14px;width:100%;max-width:960px;border-color:rgba(245,158,11,.3);text-align:center;padding:12px 20px;">
+    <span style="font-size:13px;color:var(--gray);">Optimal blended portfolio: </span>
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--amber);"> 70–80% Equities + 10–20% Crypto</span>
+    <span style="font-size:13px;color:var(--gray);"> for best risk-adjusted returns</span>
+  </div>
+</div>
+
+<!-- S4 KEY METRICS -->
+<div class="slide" id="s4">
+  <div class="tag a1">Risk Metrics</div>
+  <h2 class="a2">KEY RISK METRICS EXPLAINED</h2>
+  <div class="a3 card" style="width:100%;max-width:1000px;padding:0;overflow:hidden;">
+    <table class="tbl">
+      <thead><tr><th>Metric</th><th>Definition</th><th>Stocks (S&P 500)</th><th>Crypto (BTC)</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:600;color:var(--blue);">Beta</td><td>Price sensitivity vs market</td><td><span class="badge bg">1.00</span></td><td><span class="badge br">1.2–2.0</span></td><td style="font-size:12px;color:var(--gray);">Higher = more volatile</td></tr>
+        <tr><td style="font-weight:600;color:var(--green);">Sharpe Ratio</td><td>Return per unit of risk</td><td><span class="badge bg">1.0–1.5</span></td><td><span class="badge ba">0.5–1.5</span></td><td style="font-size:12px;color:var(--gray);">Higher = better risk-adj. return</td></tr>
+        <tr><td style="font-weight:600;color:var(--amber);">Max Drawdown</td><td>Largest peak-to-trough loss</td><td><span class="badge bg">-34%</span></td><td><span class="badge br">-65% to -80%</span></td><td style="font-size:12px;color:var(--gray);">Lower magnitude = safer</td></tr>
+        <tr><td style="font-weight:600;color:var(--purp);">VaR (95%)</td><td>Daily Value at Risk</td><td><span class="badge bg">~1.5–2%</span></td><td><span class="badge br">~5–8%</span></td><td style="font-size:12px;color:var(--gray);">Max expected daily loss</td></tr>
+        <tr><td style="font-weight:600;color:var(--red);">Std Deviation</td><td>Annualized volatility</td><td><span class="badge bg">~15–18%</span></td><td><span class="badge br">~50–100%</span></td><td style="font-size:12px;color:var(--gray);">Stocks far less volatile</td></tr>
+        <tr><td style="font-weight:600;color:var(--teal);">Correlation</td><td>BTC vs S&amp;P 500</td><td colspan="2" style="text-align:center;"><span class="badge ba">0.10–0.45 (Low)</span></td><td style="font-size:12px;color:var(--gray);">Genuine diversification benefit</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="a4 card" style="margin-top:14px;width:100%;max-width:1000px;border-color:rgba(16,185,129,.3);padding:14px 24px;text-align:center;">
+    <span style="font-size:13px;color:var(--gray);">Adding </span>
+    <span style="color:var(--amber);font-weight:600;">5–15% crypto</span>
+    <span style="font-size:13px;color:var(--gray);"> to a traditional portfolio improves the </span>
+    <span style="color:var(--green);font-weight:600;">efficient frontier</span>
+    <span style="font-size:13px;color:var(--gray);"> (Markowitz Mean-Variance framework)</span>
+  </div>
+</div>
+
+<!-- S5 RISK STRATEGIES -->
+<div class="slide" id="s5">
+  <div class="tag a1">Risk Management</div>
+  <h2 class="a2">6 ESSENTIAL RISK STRATEGIES</h2>
+  <div class="grid2 a3" style="width:100%;max-width:1000px;">
+    <div class="card" style="border-color:rgba(59,130,246,.25);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blue);margin-bottom:6px;">1. DIVERSIFICATION</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.6;">Never more than 5–10% in one asset. Spread across sectors, geographies &amp; asset classes. Reduces unsystematic risk without cutting expected return.</div>
+    </div>
+    <div class="card" style="border-color:rgba(245,158,11,.25);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--amber);margin-bottom:6px;">2. POSITION SIZING</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.6;">Never risk &gt;2% of portfolio on a single trade. Crypto positions capped at 3–5% per coin. Larger positions require higher conviction and evidence.</div>
+    </div>
+    <div class="card" style="border-color:rgba(239,68,68,.25);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--red);margin-bottom:6px;">3. STOP-LOSS ORDERS</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.6;">15% trailing stop for stocks, 25% for crypto. Prevents emotional decisions during market panic. Protects capital for future opportunities.</div>
+    </div>
+    <div class="card" style="border-color:rgba(16,185,129,.25);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--green);margin-bottom:6px;">4. DOLLAR-COST AVERAGING</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.6;">Invest fixed amounts at regular intervals. Eliminates timing risk, reduces average cost in downturns. Ideal for volatile crypto positions.</div>
+    </div>
+    <div class="card" style="border-color:rgba(139,92,246,.25);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--purp);margin-bottom:6px;">5. HEDGING</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.6;">Put options, inverse ETFs, gold/Treasury bonds as insurance. 5–10% bonds allocation reduces volatility by 15–20% without major return impact.</div>
+    </div>
+    <div class="card" style="border-color:rgba(20,184,166,.25);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--teal);margin-bottom:6px;">6. REBALANCING</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.6;">Quarterly rebalance when any asset drifts ±5% from target. Auto-enforces buy low / sell high discipline. Maintains intended risk profile.</div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 BEHAVIORAL RISK -->
+<div class="slide" id="s6">
+  <div class="tag a1">Behavioral Finance</div>
+  <h2 class="a2">THE BIGGEST RISK: YOURSELF</h2>
+  <p class="sub a3" style="margin-bottom:22px;">Behavioral biases destroy more wealth than market crashes</p>
+  <div style="display:flex;gap:20px;width:100%;max-width:1000px;" class="a4">
+    <div class="card" style="flex:1;border-color:rgba(239,68,68,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--red);margin-bottom:8px;">FOMO</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.7;">Fear Of Missing Out drives <strong style="color:var(--white);">buying at market tops</strong>. When everyone is excited, the price is already too high. Buy on fear, sell on greed.</div>
+    </div>
+    <div class="card" style="flex:1;border-color:rgba(245,158,11,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--amber);margin-bottom:8px;">LOSS AVERSION</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.7;">Holding losing positions <strong style="color:var(--white);">too long hoping for recovery</strong>. Losses feel 2x more painful than gains feel good. Cut losses early.</div>
+    </div>
+    <div class="card" style="flex:1;border-color:rgba(139,92,246,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--purp);margin-bottom:8px;">OVERCONFIDENCE</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.7;">Leads to <strong style="color:var(--white);">excessive concentration</strong> in favorite picks. Even professionals consistently underperform diversified index funds.</div>
+    </div>
+  </div>
+  <div class="a5 card" style="width:100%;max-width:1000px;margin-top:16px;border-color:rgba(16,185,129,.3);padding:18px 28px;text-align:center;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--green);margin-bottom:4px;">"TIME IN THE MARKET BEATS TIMING THE MARKET"</div>
+    <div style="font-size:13px;color:var(--gray);">90%+ of investors underperform the market over the long run due to behavioral mistakes. Write a plan and stick to it.</div>
+  </div>
+</div>
+
+<!-- S7 AI SECTOR OUTLOOK -->
+<div class="slide" id="s7">
+  <div class="tag a1">Sector Outlook 2026–2028</div>
+  <h2 class="a2">AI & SEMICONDUCTORS: BULLISH</h2>
+  <div style="display:flex;gap:28px;width:100%;max-width:1000px;align-items:center;" class="a3">
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px;">
+      <div class="card" style="border-color:rgba(139,92,246,.3);">
+        <div style="font-size:13px;color:var(--gray);line-height:1.7;"><strong style="color:var(--purp);">NVIDIA Dominance:</strong> Blackwell architecture established near-monopoly on AI training compute. Data center revenues surpassing $100B annually. No credible competitor for 18–24 months.</div>
+      </div>
+      <div class="card" style="border-color:rgba(59,130,246,.3);">
+        <div style="font-size:13px;color:var(--gray);line-height:1.7;"><strong style="color:var(--blue);">Enterprise AI Adoption:</strong> Microsoft Copilot, Salesforce, ServiceNow all seeing accelerated AI-driven revenue. Azure growing 30%+ annually. Every Fortune 500 company is an AI customer.</div>
+      </div>
+      <div class="card" style="border-color:rgba(239,68,68,.3);">
+        <div style="font-size:13px;color:var(--gray);line-height:1.7;"><strong style="color:var(--red);">Key Risks:</strong> US-China chip export restrictions, regulatory intervention (EU AI Act), potential GPU oversupply in 2025–2026.</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:240px;" class="asc">
+      <div class="card" style="text-align:center;border-color:rgba(245,158,11,.3);">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--amber);">30–35%</div>
+        <div style="font-size:12px;color:var(--gray);">AI Market CAGR through 2028</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:13px;color:var(--gray);margin-bottom:6px;">Sector Rating</div>
+        <div class="star">★★★★★</div>
+        <div style="font-size:13px;color:var(--green);margin-top:4px;font-weight:600;">BULLISH</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:11px;color:var(--gray);margin-bottom:4px;">Top Picks</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--purp);">NVDA · MSFT · AMD · TSMC</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 CRYPTO OUTLOOK -->
+<div class="slide" id="s8">
+  <div class="tag a1">Sector Outlook 2026–2028</div>
+  <h2 class="a2">CRYPTO: MODERATELY BULLISH</h2>
+  <div class="grid3 a3" style="width:100%;max-width:1000px;margin-bottom:16px;">
+    <div class="card" style="border-color:rgba(245,158,11,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--amber);margin-bottom:6px;">BITCOIN</div>
+      <div style="font-size:12px;color:var(--gray);line-height:1.7;">4th halving done (Apr 2024). Block reward now 3.125 BTC. Historical post-halving cycles produce new ATH within 12–18 months. Spot ETFs (BlackRock, Fidelity) opened $8T+ institutional wealth.</div>
+    </div>
+    <div class="card" style="border-color:rgba(139,92,246,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--purp);margin-bottom:6px;">ETHEREUM</div>
+      <div style="font-size:12px;color:var(--gray);line-height:1.7;">Staking yields ~3–5% annually. DeFi TVL growing. EIP upgrades improving scalability and reducing gas fees. Foundation of Web3 financial infrastructure.</div>
+    </div>
+    <div class="card" style="border-color:rgba(20,184,166,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--teal);margin-bottom:6px;">SOLANA</div>
+      <div style="font-size:12px;color:var(--gray);line-height:1.7;">Leading platform for consumer apps, NFTs, and meme coins. 65,000 TPS vs Ethereum's ~15. Sub-cent transaction fees. Growing developer ecosystem.</div>
+    </div>
+  </div>
+  <div class="a4 chart-wrap" style="width:100%;max-width:1000px;">
+    <div style="font-size:11px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Expected Annual Return Range (2026–2028)</div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--amber);">BTC</span><div class="bar-track"><div class="bar-fill bf-a" data-w="60%">30–60%</div></div></div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--purp);">ETH</span><div class="bar-track"><div class="bar-fill bf-p" data-w="50%">25–50%</div></div></div>
+    <div class="bar-row"><span class="bar-lbl" style="color:var(--teal);">SOL</span><div class="bar-track"><div class="bar-fill bf-g" data-w="70%">30–70%</div></div></div>
+  </div>
+</div>
+
+<!-- S9 ALL SECTORS RATING TABLE -->
+<div class="slide" id="s9">
+  <div class="tag a1">Sector Ratings</div>
+  <h2 class="a2">INVESTMENT SECTOR RATINGS 2026–2028</h2>
+  <div class="a3 card" style="width:100%;max-width:1000px;padding:0;overflow:hidden;">
+    <table class="tbl">
+      <thead><tr><th>Sector</th><th>Outlook</th><th>Expected CAGR</th><th>Key Risk</th><th>Rating</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;">AI &amp; Semiconductors</td>
+          <td><span class="badge bg">Bullish</span></td>
+          <td style="color:var(--green);font-weight:600;">25–35%</td>
+          <td style="font-size:12px;color:var(--gray);">Regulation / Competition</td>
+          <td class="star">★★★★★</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Cryptocurrency</td>
+          <td><span class="badge ba">Mod. Bullish</span></td>
+          <td style="color:var(--amber);font-weight:600;">30–60%</td>
+          <td style="font-size:12px;color:var(--gray);">Volatility / Regulation</td>
+          <td class="star">★★★★☆</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Cloud Computing</td>
+          <td><span class="badge bg">Bullish</span></td>
+          <td style="color:var(--green);font-weight:600;">20–28%</td>
+          <td style="font-size:12px;color:var(--gray);">Margin Compression</td>
+          <td class="star">★★★★☆</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Healthcare / Biotech</td>
+          <td><span class="badge bg">Bullish</span></td>
+          <td style="color:var(--green);font-weight:600;">14–20%</td>
+          <td style="font-size:12px;color:var(--gray);">FDA Approval Risk</td>
+          <td class="star">★★★★☆</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Clean Energy</td>
+          <td><span class="badge ba">Bullish (LT)</span></td>
+          <td style="color:var(--amber);font-weight:600;">12–18%</td>
+          <td style="font-size:12px;color:var(--gray);">Policy / Rate Risk</td>
+          <td class="star">★★★☆☆</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Consumer Discretionary</td>
+          <td><span class="badge bb">Neutral</span></td>
+          <td style="color:var(--gray);font-weight:600;">8–12%</td>
+          <td style="font-size:12px;color:var(--gray);">Recession / Inflation</td>
+          <td class="star">★★★☆☆</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="grid3 a4" style="width:100%;max-width:1000px;margin-top:14px;">
+    <div class="card" style="text-align:center;border-color:rgba(245,158,11,.2);">
+      <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:2px;">Best Risk/Reward</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--amber);">AI + CLOUD</div>
+    </div>
+    <div class="card" style="text-align:center;border-color:rgba(16,185,129,.2);">
+      <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:2px;">Defensive Pick</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);">HEALTHCARE</div>
+    </div>
+    <div class="card" style="text-align:center;border-color:rgba(139,92,246,.2);">
+      <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:2px;">High Conviction</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--purp);">NVDA · MSFT</div>
+    </div>
+  </div>
+</div>
+
+<!-- S10 CONCLUSION -->
+<div class="slide" id="s10">
+  <div class="tag a1">Final Conclusion</div>
+  <h2 class="a2">KEY TAKEAWAYS</h2>
+  <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:960px;">
+    <div class="card a3" style="display:flex;align-items:center;gap:20px;border-color:rgba(59,130,246,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--blue);width:48px;text-align:center;flex-shrink:0;">1</div>
+      <div style="font-size:14px;color:var(--gray);line-height:1.6;"><strong style="color:var(--white);">Stocks offer stability, crypto offers growth.</strong> A blended 70–80% stocks + 10–20% crypto portfolio maximizes risk-adjusted returns using low correlation between the two.</div>
+    </div>
+    <div class="card a4" style="display:flex;align-items:center;gap:20px;border-color:rgba(16,185,129,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--green);width:48px;text-align:center;flex-shrink:0;">2</div>
+      <div style="font-size:14px;color:var(--gray);line-height:1.6;"><strong style="color:var(--white);">Risk management is non-negotiable.</strong> Diversification, stop-losses, DCA, and quarterly rebalancing are the foundation of every successful long-term portfolio.</div>
+    </div>
+    <div class="card a5" style="display:flex;align-items:center;gap:20px;border-color:rgba(245,158,11,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--amber);width:48px;text-align:center;flex-shrink:0;">3</div>
+      <div style="font-size:14px;color:var(--gray);line-height:1.6;"><strong style="color:var(--white);">Top sectors 2026–2028: AI, Cloud, Healthcare, Digital Assets.</strong> AI &amp; semiconductors lead with 25–35% CAGR potential driven by insatiable demand for compute infrastructure.</div>
+    </div>
+    <div class="card a6" style="display:flex;align-items:center;gap:20px;border-color:rgba(139,92,246,.3);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--purp);width:48px;text-align:center;flex-shrink:0;">4</div>
+      <div style="font-size:14px;color:var(--gray);line-height:1.6;"><strong style="color:var(--white);">Behavioral discipline beats market timing every time.</strong> Time in the market beats timing the market for 90%+ of investors. Write a plan. Stick to it. Be patient.</div>
+    </div>
+  </div>
+  <div class="a6" style="margin-top:14px;font-size:11px;color:var(--gray);text-align:center;">
+    CodeAlpha Finance &amp; Investment Analysis Internship · Task 4 · June 2026 · Data: Yahoo Finance, CoinMarketCap, SEC.gov
+  </div>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide'),
+      dotsEl=document.getElementById('dots'),
+      ctr=document.getElementById('ctr'),
+      prog=document.getElementById('prog');
+let cur=0;const tot=slides.length;
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' on':'');d.onclick=()=>go(i);dotsEl.appendChild(d);});
+function bars(sl){sl.querySelectorAll('.bar-fill').forEach(b=>{b.style.width='0';setTimeout(()=>{b.style.width=b.dataset.w||'0';},350);});}
+function go(n){
+  slides[cur].classList.remove('active');dotsEl.children[cur].classList.remove('on');
+  cur=(n+tot)%tot;
+  slides[cur].classList.add('active');dotsEl.children[cur].classList.add('on');
+  ctr.textContent=`${cur+1} / ${tot}`;
+  prog.style.width=`${((cur+1)/tot)*100}%`;
+  bars(slides[cur]);
+}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(cur+1);if(e.key==='ArrowLeft')go(cur-1);});
+document.addEventListener('click',e=>{if(!e.target.closest('.dot'))go(cur+1);});
+let t=setInterval(()=>go(cur+1),7500);
+document.addEventListener('keydown',()=>{clearInterval(t);t=setInterval(()=>go(cur+1),7500);});
+bars(slides[0]);prog.style.width=`${(1/tot)*100}%`;
+</script>
+</body>
+</html>
